@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\sneakers-api-.net.props" />
+</Project>
