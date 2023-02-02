@@ -41,19 +41,23 @@ namespace sneakers_api_.net.Controllers
 
 		// POST api/<SneakersController>
 		[HttpPost]
-		public async Task<IActionResult> Post(Sneaker sneaker)
+		public async Task<IActionResult> Post(Sneaker sneaker,Sneakers _sneakers)
 		{
-			var json = JsonConvert.SerializeObject(sneaker);
-			var content = new StringContent(json, Encoding.UTF8, "application/json");
-			var response = await _httpClient.PostAsync("https://sneakersxu.azurewebsites.net/addSneakerXu", content);
-
-			if (response.IsSuccessStatusCode)
+			var allSneakers = _sneakers.GetAllSneakers();
+			 var existingSneaker = allSneakers.Find(s => s.id == sneaker.id);
+			if (existingSneaker == null)
 			{
-				return Ok();
+				var json = JsonConvert.SerializeObject(sneaker);
+				var content = new StringContent(json, Encoding.UTF8, "application/json");
+				var response = await _httpClient.PostAsync("https://sneakersxu.azurewebsites.net/addSneakerXu", content);
+
+				if (response.IsSuccessStatusCode)
+				{
+					return Ok();
+				}
+				return BadRequest();
 			}
-
-			return BadRequest();
-
+			return BadRequest("the id of the sneakers have to be unique");
 		}
 
 

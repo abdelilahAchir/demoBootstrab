@@ -16,6 +16,7 @@ namespace sneakers_api_.net.models
         {
 
             _sneakers.Clear();
+            
 
             var response = await _httpClient.GetAsync($"https://sneakersxu.azurewebsites.net/sneakers");
             var json = await response.Content.ReadAsStringAsync();
@@ -23,7 +24,8 @@ namespace sneakers_api_.net.models
 
             for (var i = 0; i < data.GetArrayLength(); i++)
             {
-                var brand = data[i].GetProperty("brand").GetString();
+	           var brandId = data[i].GetProperty("id").GetInt32();
+				var brand = data[i].GetProperty("brand").GetString();
                 var model = data[i].GetProperty("model").GetString();
                 var price = data[i].GetProperty("price").GetString();
 
@@ -52,7 +54,7 @@ namespace sneakers_api_.net.models
 
                 var sneaker = new Sneaker
                 {
-                    id = i,
+	               id = brandId,
                     brand = brand,
                     model = model,
                     price = price,
@@ -62,10 +64,11 @@ namespace sneakers_api_.net.models
                     images_urls = images_urls.ToArray()
                 };
 
-                if (!_sneakers.ContainsValue(sneaker) && !_sneakers.ContainsKey(i))
+                if ( !_sneakers.ContainsKey(sneaker.id))
                 {
                     _sneakers.Add(i, sneaker);
                 }
+
             }
         }
         public List<Sneaker> GetAllSneakers() => _sneakers.Values.ToList();
